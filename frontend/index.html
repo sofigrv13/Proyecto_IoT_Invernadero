@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard IoT - Invernadero Inteligente</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f7f9;
+        margin: 0;
+        padding: 25px;
+        color: #263238;
+      }
+
+      .contenedor {
+        max-width: 1100px;
+        margin: auto;
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+      }
+
+      .subtitulo {
+        text-align: center;
+        color: #607d8b;
+        margin-bottom: 25px;
+      }
+
+      .tarjetas {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+      }
+
+      .tarjeta,
+      .grafica {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+      }
+
+      .tarjeta {
+        text-align: center;
+      }
+
+      .valor {
+        font-size: 27px;
+        font-weight: bold;
+        margin: 12px 0;
+        overflow-wrap: anywhere;
+      }
+
+      .unidad {
+        color: #607d8b;
+        font-size: 13px;
+      }
+
+      .graficas {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .grafica h3 {
+        text-align: center;
+        margin-top: 0;
+      }
+
+      .grafica canvas {
+        width: 100%;
+        max-height: 280px;
+      }
+
+      .estado {
+        text-align: center;
+        font-weight: bold;
+        padding: 12px;
+        border-radius: 8px;
+        background: #e8f5e9;
+        color: #256029;
+      }
+
+      .estado.error {
+        background: #ffebee;
+        color: #b71c1c;
+      }
+
+      .controles {
+        text-align: center;
+      }
+
+      button {
+        padding: 12px 25px;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+      }
+
+      .encender {
+        background: #278b80;
+      }
+
+      .apagar {
+        background: #c75b5b;
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .nota {
+        color: #607d8b;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 12px;
+        }
+
+        .tarjetas,
+        .graficas {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="contenedor">
+      <h1>Dashboard IoT</h1>
+      <p class="subtitulo">
+        Monitoreo multisensor de un invernadero inteligente
+      </p>
+
+      <div class="tarjetas">
+        <div class="tarjeta">
+          <h3>Humedad del suelo</h3>
+          <div class="valor" id="humedad">--</div>
+          <div class="unidad">Lectura ADC (0-4095)</div>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Temperatura</h3>
+          <div class="valor" id="temperatura">--</div>
+          <div class="unidad">°C</div>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Intensidad de luz</h3>
+          <div class="valor" id="luz">--</div>
+          <div class="unidad">Lectura ADC (0-4095)</div>
+        </div>
+      </div>
+
+      <div class="tarjetas">
+        <div class="tarjeta">
+          <h3>Latencia</h3>
+          <div class="valor" id="latencia">N/D</div>
+          <div class="unidad">ms</div>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Pérdida de paquetes</h3>
+          <div class="valor" id="perdida">0.00%</div>
+          <div class="unidad">Estimación por secuencia recibida</div>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Diagnóstico</h3>
+          <div class="valor" id="diagnostico" style="font-size: 18px">
+            Pendiente
+          </div>
+          <div class="unidad">Modelo Random Forest pendiente de integrar</div>
+        </div>
+      </div>
+
+      <div class="graficas">
+        <div class="grafica">
+          <h3>Humedad del suelo</h3>
+          <canvas id="graficaHumedad"></canvas>
+        </div>
+
+        <div class="grafica">
+          <h3>Temperatura</h3>
+          <canvas id="graficaTemperatura"></canvas>
+        </div>
+
+        <div class="grafica">
+          <h3>Intensidad de luz</h3>
+          <canvas id="graficaLuz"></canvas>
+        </div>
+      </div>
+
+      <p class="estado" id="estado">Conectando al backend...</p>
+    </div>
+
+    <script>
+      const humedadElemento = document.getElementById("humedad");
+      const temperaturaElemento = document.getElementById("temperatura");
+      const luzElemento = document.getElementById("luz");
+      const latenciaElemento = document.getElementById("latencia");
+      const perdidaElemento = document.getElementById("perdida");
+      const diagnosticoElemento = document.getElementById("diagnostico");
+      const estadoElemento = document.getElementById("estado");
+      const estadoLED = document.getElementById("estadoLED");
+
+      const btnEncender = document.getElementById("btnEncender");
+      const btnApagar = document.getElementById("btnApagar");
+
+      let secuenciaAnterior = null;
+      let mensajesRecibidos = 0;
+      let paquetesPerdidos = 0;
+
+      function crearGrafica(id, etiqueta) {
+        const contexto = document.getElementById(id).getContext("2d");
+
+        return new Chart(contexto, {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: etiqueta,
+                data: [],
+                borderWidth: 2,
+                pointRadius: 2,
+                tension: 0.25,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            animation: false,
+            scales: {
+              y: {
+                beginAtZero: false,
+              },
+            },
+          },
+        });
+      }
+
+      const graficaHumedad = crearGrafica("graficaHumedad", "Humedad (ADC)");
+
+      const graficaTemperatura = crearGrafica(
+        "graficaTemperatura",
+        "Temperatura (°C)",
+      );
+
+      const graficaLuz = crearGrafica("graficaLuz", "Luz (ADC)");
+
+      // Permite abrir la pagina desde un archivo local o desde un servidor web.
+      const host =
+        location.protocol === "file:" ? "127.0.0.1:8000" : location.host;
+
+      const protocoloWS = location.protocol === "https:" ? "wss:" : "ws:";
+
+      const websocket = new WebSocket(`${protocoloWS}//${host}/ws/telemetria`);
+
+      websocket.onopen = function () {
+        console.log("WebSocket conectado correctamente");
+      };
+
+      websocket.onmessage = function (event) {
+        console.log("Datos recibidos:", JSON.parse(event.data));
+      };
+
+      websocket.onerror = function (error) {
+        console.log("Error en WebSocket:", error);
+      };
+
+      websocket.onclose = function (event) {
+        console.log("WebSocket cerrado:", event.code, event.reason);
+      };
+
+      function agregarPunto(grafica, secuencia, valor) {
+        grafica.data.labels.push(secuencia);
+        grafica.data.datasets[0].data.push(valor);
+
+        if (grafica.data.labels.length > 30) {
+          grafica.data.labels.shift();
+          grafica.data.datasets[0].data.shift();
+        }
+
+        grafica.update();
+      }
+
+      function enviarComando(action) {
+        if (websocket.readyState !== WebSocket.OPEN) {
+          estadoLED.innerText = "No hay conexión con el backend.";
+          return;
+        }
+
+        websocket.send(JSON.stringify({ action: action }));
+
+        estadoLED.innerText =
+          action === "ON"
+            ? "Comando ENCENDER enviado"
+            : "Comando APAGAR enviado";
+      }
+
+      websocket.onopen = function () {
+        estadoElemento.innerText = "WebSocket conectado";
+        estadoElemento.classList.remove("error");
+
+        estadoLED.innerText = "Conexión lista para enviar comandos";
+        btnEncender.disabled = false;
+        btnApagar.disabled = false;
+      };
+
+      websocket.onmessage = function (event) {
+        try {
+          const datos = JSON.parse(event.data);
+
+          if (
+            datos.humedad === undefined ||
+            datos.temperatura === undefined ||
+            datos.luz === undefined ||
+            datos.sequence_id === undefined
+          ) {
+            console.warn(
+              "Mensaje recibido sin las variables esperadas:",
+              datos,
+            );
+            return;
+          }
+
+          humedadElemento.innerText = Number(datos.humedad).toFixed(0);
+          temperaturaElemento.innerText =
+            Number(datos.temperatura).toFixed(2) + " °C";
+          luzElemento.innerText = Number(datos.luz).toFixed(0);
+
+          if (datos.latencia !== null && datos.latencia !== undefined) {
+            latenciaElemento.innerText = Number(datos.latencia).toFixed(2);
+          } else {
+            latenciaElemento.innerText = "N/D";
+          }
+
+          diagnosticoElemento.innerText = datos.prediccion || "Pendiente";
+
+          const secuencia = Number(datos.sequence_id);
+
+          // Estimar paquetes faltantes entre secuencias recibidas
+          // por esta conexión del dashboard.
+          if (secuenciaAnterior !== null) {
+            const diferencia = secuencia - secuenciaAnterior;
+
+            if (diferencia > 1) {
+              paquetesPerdidos += diferencia - 1;
+            } else if (diferencia <= 0) {
+              // El ESP32 pudo reiniciarse y reiniciar su contador.
+              paquetesPerdidos = 0;
+              mensajesRecibidos = 0;
+            }
+          }
+
+          mensajesRecibidos++;
+          secuenciaAnterior = secuencia;
+
+          const totalEsperado = mensajesRecibidos + paquetesPerdidos;
+          const porcentaje =
+            totalEsperado > 0 ? (paquetesPerdidos / totalEsperado) * 100 : 0;
+
+          perdidaElemento.innerText = porcentaje.toFixed(2) + "%";
+
+          agregarPunto(graficaHumedad, secuencia, Number(datos.humedad));
+          agregarPunto(
+            graficaTemperatura,
+            secuencia,
+            Number(datos.temperatura),
+          );
+          agregarPunto(graficaLuz, secuencia, Number(datos.luz));
+        } catch (error) {
+          console.error("Error procesando telemetria:", error);
+        }
+      };
+
+      websocket.onerror = function () {
+        estadoElemento.innerText = "Error de conexión WebSocket";
+        estadoElemento.classList.add("error");
+      };
+
+      websocket.onclose = function () {
+        estadoElemento.innerText =
+          "WebSocket desconectado. Recarga la página para reconectar.";
+        estadoElemento.classList.add("error");
+
+        estadoLED.innerText = "Sin conexión";
+        btnEncender.disabled = true;
+        btnApagar.disabled = true;
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+fecha_hora,10/15/2026 11:00,10/15/2026 12:00,10/15/2026 13:00,10/15/2026 14:00,10/19/2026 16:00,10/19/2026 17:00,10/19/2026 18:00,10/19/2026 19:00,10/24/2026 20:00,10/24/2026 21:00,10/24/2026 22:00,10/24/2026 23:00,10/29/2026 16:25,10/29/2026 17:25,10/29/2026 18:25,10/29/2026 19:25
+cultivo,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA,HOSTA
+humedad_raw,3119,1657,2976,3011,3104,1703,2965,3002,2837,2997,3088,3110,1648,2945,3039,3120
+temperatura_c,23.35,24.42,25.36,26.03,26.75,26.66,26.63,26.59,26.01,25.63,24.5,24,26.55,26.55,26.66,26.61
+luz_raw,1413,1891,2007,1380,972,683,845,557,654,357,126,126,1478,1379,1265,987
+horas_desde_riego,7 hrs,1 hrs,2hrs,3hrs,10 hrs,1hrs,2hrs,3hrs,2hrs,3hrs,4hrs,5hrs,5 hrs,1hrs,2hrs,3hrs
+estado_suelo_observado,medio seco,humedo,humedo,humedo,seco,humedo,humedo,humedo,humedo optimo,humedo,seco semihumedo,seco,muy mojado,humedo,humedo,humedo
+estado_hojas_observado,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien,bien
+diagnostico,estrés hidrico,hidratacion optima,hidratacion optima,hidratacion optima,hidratacion optima,hidratacion optima,hidratacion optima,hidratacion optima,hidratacion optima,hidratacion optima,estrés hidrico,hidratacion optima,exceso de agua,hidratacion optima,hidratacion optima,hidratacion optima
+observaciones,na,na,na,na,na,na,na,na,na,na,na,na,na,na,na,na
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,"fecha_hora: fecha y hora de la medición.
+
+
+
+cultivo: Hosta.
+
+
+
+humedad_raw: lectura del sensor de humedad.
+
+
+
+temperatura_c: temperatura calibrada.
+
+
+
+luz_raw: lectura del sensor de luz.
+
+
+
+horas_desde_riego: tiempo desde el último riego.
+
+
+Hidratación Óptima — las condiciones de humedad, temperatura y luz están dentro de un rango adecuado para el cultivo.
+??? Estrés Hídrico — hay poca disponibilidad de agua/humedad y el cultivo presenta condiciones asociadas con falta de agua.
+?? Exceso de Agua — hay demasiada humedad o saturación del suelo.
+?? Golpe de Calor
+estado_suelo_observado: seco, húmedo o saturado.
+
+
+
+estado_hojas_observado: normales, marchitas, amarillas, etc.
+
+
+
+diagnostico: una de las cuatro clases.
+
+
+
+observaciones: cualquier detalle adicional.",,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
