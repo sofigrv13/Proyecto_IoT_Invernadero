@@ -210,6 +210,32 @@
         </div>
       </div>
 
+      <div class="tarjeta controles">
+        <h3>Control del LED</h3>
+
+        <p id="estadoLED" class="nota">Esperando conexión con el backend...</p>
+
+        <button
+          id="btnEncender"
+          class="encender"
+          onclick="enviarComando('ON')"
+          disabled
+        >
+          ENCENDER
+        </button>
+
+        <button
+          id="btnApagar"
+          class="apagar"
+          onclick="enviarComando('OFF')"
+          disabled
+        >
+          APAGAR
+        </button>
+
+        <p class="nota">Control remoto del actuador mediante MQTT</p>
+      </div>
+
       <p class="estado" id="estado">Conectando al backend...</p>
     </div>
 
